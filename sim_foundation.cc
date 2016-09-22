@@ -174,6 +174,12 @@ void sim_foundation::receive_WIRE_message(mess_event mesg)
 	long pc_t = mesg.pc();
 	long vc_t = mesg.vc();
 	flit_template & flits_t = mesg.get_flit();
+	//karel: check the trace of transition.
+	if(flits_t.type()==HEADER_){
+		cout<<"karel: "<<endl;
+		cout<<"the router of ("<<des_t[0]<<", "<<des_t[1]<<", "<<des_t[2]<<") receive a flit."<<endl;
+	}
+	//karel: end;
 	router(des_t).receive_flit(pc_t, vc_t, flits_t);
 }
 

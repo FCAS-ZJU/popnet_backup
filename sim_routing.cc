@@ -91,6 +91,54 @@ void sim_router_template::XY_algorithm(const add_type & des_t,
 		}
 	}
 }
+
+void sim_router_template::XYZ_algorithm(const add_type &des_t,const add_type &sor_t,
+		long s_ph, long s_vc)
+{
+	long xoffset = des_t[0]-address_[0];
+	long yoffset = des_t[1]-address_[1];
+	long zoffset = des_t[2]-address_[2];
+	if(zoffset < 0){
+		input_module_.add_routing(s_ph, s_vc, VC_type(5,0));
+		input_module_.add_routing(s_ph, s_vc, VC_type(5,1));
+		input_module_.add_routing(s_ph, s_vc, VC_type(5,2));
+		input_module_.add_routing(s_ph, s_vc, VC_type(5,3));
+	}else if(zoffset > 0){
+		input_module_.add_routing(s_ph, s_vc, VC_type(6,0));
+		input_module_.add_routing(s_ph, s_vc, VC_type(6,1));
+		input_module_.add_routing(s_ph, s_vc, VC_type(6,2));
+		input_module_.add_routing(s_ph, s_vc, VC_type(6,3));
+	}else{
+		if(yoffset < 0) {
+			input_module_.add_routing(s_ph, s_vc, VC_type(3,0));
+			input_module_.add_routing(s_ph, s_vc, VC_type(3,1));
+			input_module_.add_routing(s_ph, s_vc, VC_type(3,2));
+			input_module_.add_routing(s_ph, s_vc, VC_type(3,3));
+		}else if(yoffset > 0) {
+			input_module_.add_routing(s_ph, s_vc, VC_type(4,0));
+			input_module_.add_routing(s_ph, s_vc, VC_type(4,1));
+			input_module_.add_routing(s_ph, s_vc, VC_type(4,2));
+			input_module_.add_routing(s_ph, s_vc, VC_type(4,3));
+		}else {
+			if(xoffset < 0) {
+				input_module_.add_routing(s_ph, s_vc, VC_type(1,0));
+				input_module_.add_routing(s_ph, s_vc, VC_type(1,1));
+				input_module_.add_routing(s_ph, s_vc, VC_type(1,2));
+				input_module_.add_routing(s_ph, s_vc, VC_type(1,3));
+			}else if (xoffset > 0) {
+				input_module_.add_routing(s_ph, s_vc, VC_type(2,0));
+				input_module_.add_routing(s_ph, s_vc, VC_type(2,1));
+				input_module_.add_routing(s_ph, s_vc, VC_type(2,2));
+				input_module_.add_routing(s_ph, s_vc, VC_type(2,3));
+			}
+		}
+	}
+
+}
+
+
+
+
 			
 //***************************************************************************//
 //only two-dimension is supported

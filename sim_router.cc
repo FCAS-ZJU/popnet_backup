@@ -88,6 +88,10 @@ sim_router_template::sim_router_template(long a, long b, long c,
 		curr_algorithm = & sim_router_template::TXY_algorithm;
 		break;
 
+		case XYZ_ :
+		curr_algorithm = & sim_router_template::XYZ_algorithm;
+		break;
+
 		default :
 		Sassert(0);
 		break;
