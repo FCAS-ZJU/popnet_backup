@@ -13,7 +13,7 @@
 // data structure to model the structure and behavior   //
 // of routers.                                          //
 // *****************************************************//
-ostream & operator<<(ostream& os, const sim_router_template & sr) 
+ostream & operator<<(ostream& os, const sim_router_template & sr)
 {
 	long k = sr.address_.size();
 	for(long i = 0; i < k; i++) {
@@ -42,7 +42,7 @@ sim_router_template::sim_router_template():
 	local_input_time_(),
 	packet_counter_(),
 	localinFile_()
-	
+
 {
 }
 
@@ -86,6 +86,7 @@ sim_router_template::sim_router_template(long a, long b, long c,
 
 		case TXY_ :
 		curr_algorithm = & sim_router_template::TXY_algorithm;
+		cout<<"The curr_algorithm is TXY_algorithm"<<endl;
 		break;
 
 		case XYZ_ :
@@ -152,14 +153,14 @@ power_template::power_template(long a, long b, long c):
 		arbiter_vc_req_[i].resize(b, 1);
 		arbiter_vc_grant_[i].resize(b, 1);
 	}
-	SIM_bus_init(& link_power_, GENERIC_BUS, IDENT_ENC, ATOM_WIDTH_, 
+	SIM_bus_init(& link_power_, GENERIC_BUS, IDENT_ENC, ATOM_WIDTH_,
 			0, 1, 1, configuration::wap().link_length(), 0);
 }
 
 void power_template::power_buffer_read(long in_port, Data_type & read_d)
 {
 	for(long i = 0; i < flit_size_; i++) {
-		FUNC(SIM_buf_power_data_read, &(router_info_.in_buf_info), 
+		FUNC(SIM_buf_power_data_read, &(router_info_.in_buf_info),
 			&(router_power_.in_buf), read_d[i]);
 		buffer_read_[in_port][i] = read_d[i];
 	}
@@ -176,32 +177,32 @@ void power_template::power_link_traversal(long in_port, Data_type & read_d)
 int i = 0;
 void power_template::power_buffer_write(long in_port, Data_type & write_d)
 {
-  
- 
+
+
 	for( i = 0; i < flit_size_; i ++) {
 		Atom_type old_d = buffer_write_[in_port][i];
 		Atom_type new_d = write_d[i];
 		Atom_type old_d2 = buffer_write_[in_port][i];
 		Atom_type new_d2 = write_d[i];
-      
-        FUNC(SIM_buf_power_data_write, &(router_info_.in_buf_info), 
-			&(router_power_.in_buf), (char *) (&old_d), 
+
+        FUNC(SIM_buf_power_data_write, &(router_info_.in_buf_info),
+			&(router_power_.in_buf), (char *) (&old_d),
 			(char *) (&old_d),
              (char *) (&new_d));
-        
+
 		buffer_write_[in_port][i] = write_d[i];
 
 	}
 }
 
-void power_template::power_crossbar_trav(long in_port, long out_port, 
+void power_template::power_crossbar_trav(long in_port, long out_port,
 		Data_type & trav_d)
 {
 	for(long i = 0; i < flit_size_; i++) {
-		SIM_crossbar_record(&(router_power_.crossbar), 1, trav_d[i], 
+		SIM_crossbar_record(&(router_power_.crossbar), 1, trav_d[i],
 				crossbar_read_[in_port][i], 1, 1);
-		SIM_crossbar_record(&(router_power_.crossbar), 0, trav_d[i], 
-				crossbar_write_[out_port][i], crossbar_input_[out_port], 
+		SIM_crossbar_record(&(router_power_.crossbar), 0, trav_d[i],
+				crossbar_write_[out_port][i], crossbar_input_[out_port],
 				in_port);
 
 		crossbar_read_[in_port][i] = trav_d[i];
@@ -209,7 +210,7 @@ void power_template::power_crossbar_trav(long in_port, long out_port,
 		crossbar_input_[out_port] = in_port;
 	}
 }
-void power_template::power_vc_arbit(long pc, long vc, Atom_type req, 
+void power_template::power_vc_arbit(long pc, long vc, Atom_type req,
 		unsigned long gra){
 	SIM_arbiter_record(& arbiter_vc_power_, req, arbiter_vc_req_[pc][vc],
 			gra, arbiter_vc_grant_[pc][vc]);
@@ -224,7 +225,7 @@ double power_template::power_arbiter_report()
 
 double power_template::power_buffer_report()
 {
-	return SIM_array_power_report(&(router_info_.in_buf_info), 
+	return SIM_array_power_report(&(router_info_.in_buf_info),
 			&(router_power_.in_buf));
 }
 
@@ -403,7 +404,7 @@ void sim_router_template::inject_packet(long a, add_type & b, add_type & c,
 {
 	// if it is the HEADER_ flit choose the shortest waiting vc queue
 	// next state, it should choose routing
-	VC_type vc_t; 
+	VC_type vc_t;
 	for(long l = 0; l < e; l++) {
 		Data_type flit_data;
 		for(long i = 0; i < flit_size_; i++) {
@@ -428,13 +429,13 @@ void sim_router_template::inject_packet(long a, add_type & b, add_type & c,
 			if(input_module_.input(0, vc_t.first).size() > 100) {
 				input_module_.ibuff_is_full();
 			}
-			input_module_.add_flit(0, (vc_t.first),  
+			input_module_.add_flit(0, (vc_t.first),
 								flit_template(a, HEADER_, b, c, d, flit_data));
 		}else if(l == (e - 1)){
-			input_module_.add_flit(0, (vc_t.first),  
+			input_module_.add_flit(0, (vc_t.first),
 								flit_template(a, TAIL_, b, c, d, flit_data));
 		}else {
-			input_module_.add_flit(0, (vc_t.first),  
+			input_module_.add_flit(0, (vc_t.first),
 								flit_template(a, BODY_, b, c, d, flit_data));
 		}
 		power_module_.power_buffer_write(0, flit_data);
@@ -534,8 +535,8 @@ void sim_router_template::flit_outbuffer()
 						}
 					}
 					mess_queue::wm_pointer().add_message(
-						mess_event(event_time + CREDIT_DELAY_, 
-						CREDIT_, address_, cre_add_t, cre_pc_t, j));  
+						mess_event(event_time + CREDIT_DELAY_,
+						CREDIT_, address_, cre_add_t, cre_pc_t, j));
 				}
 
 				long in_size_t = input_module_.input(i,j).size();
@@ -608,7 +609,7 @@ void sim_router_template::flit_traversal(long i)
 		output_module_.remove_flit(i);
 		output_module_.remove_add(i);
 		mess_queue::wm_pointer().add_message(mess_event(flit_delay_t,
-			WIRE_, address_, wire_add_t, wire_pc_t, 
+			WIRE_, address_, wire_add_t, wire_pc_t,
 			outadd_t.second, flit_t));
 	}
 }
@@ -625,7 +626,7 @@ void sim_router_template::accept_flit(time_type a, const flit_template & b)
 }
 
 //***************************************************************************//
-//flit traversal through link 
+//flit traversal through link
 void sim_router_template::flit_traversal()
 {
 	for(long i = 1; i < physic_ports_; i++) {
@@ -633,7 +634,7 @@ void sim_router_template::flit_traversal()
 	}
 }
 //***************************************************************************//
-//routing pipeline stages 
+//routing pipeline stages
 void sim_router_template::router_sim_pwr()
 {
 	//stage 5 flit traversal

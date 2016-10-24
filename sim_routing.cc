@@ -10,12 +10,13 @@
 void sim_router_template::TXY_algorithm(const add_type & des_t,
 		const add_type & sor_t, long s_ph, long s_vc)
 {
+	cout<<"in TXY_algorithm"<<address_[0]<<" "<<address_[1]<<endl;
 	long xoffset = des_t[0] - address_[0];
 	long yoffset = des_t[1] - address_[1];
-	bool xdirection = (abs(static_cast<int>(xoffset)) * 2 
-					<= ary_size_)? true: false; 
-	bool ydirection = (abs(static_cast<int>(yoffset)) * 2 
-					<= ary_size_)? true: false; 
+	bool xdirection = (abs(static_cast<int>(xoffset)) * 2
+					<= ary_size_)? true: false;
+	bool ydirection = (abs(static_cast<int>(yoffset)) * 2
+					<= ary_size_)? true: false;
 
 	if(xdirection) {
 		if(xoffset < 0) {
@@ -33,7 +34,7 @@ void sim_router_template::TXY_algorithm(const add_type & des_t,
 				if(yoffset < 0) {
 					input_module_.add_routing(s_ph, s_vc, VC_type(4, 0));
 				}else if(yoffset > 0) {
-					input_module_.add_routing(s_ph, s_vc, VC_type(3, 1)); 
+					input_module_.add_routing(s_ph, s_vc, VC_type(3, 1));
 				}
 			}
 		}
@@ -53,7 +54,7 @@ void sim_router_template::TXY_algorithm(const add_type & des_t,
 				if(yoffset < 0) {
 					input_module_.add_routing(s_ph, s_vc, VC_type(4, 0));
 				}else if(yoffset> 0) {
-					input_module_.add_routing(s_ph, s_vc, VC_type(3, 1)); 
+					input_module_.add_routing(s_ph, s_vc, VC_type(3, 1));
 				}
 			}
 		}
@@ -64,6 +65,8 @@ void sim_router_template::TXY_algorithm(const add_type & des_t,
 void sim_router_template::XY_algorithm(const add_type & des_t,
 		const add_type & sor_t, long s_ph, long s_vc)
 {
+		cout<<"in XY_algorithm"<<address_[0]<<" "<<address_[1]<<endl;
+
 	long xoffset = des_t[0] - address_[0];
 	long yoffset = des_t[1] - address_[1];
 
@@ -139,7 +142,7 @@ void sim_router_template::XYZ_algorithm(const add_type &des_t,const add_type &so
 
 
 
-			
+
 //***************************************************************************//
 //only two-dimension is supported
 void sim_router_template::routing_decision()
@@ -207,7 +210,7 @@ void sim_router_template::routing_decision()
 						}
 					}
 					mess_queue::wm_pointer().add_message(
-						mess_event(event_time + CREDIT_DELAY_, 
+						mess_event(event_time + CREDIT_DELAY_,
 						CREDIT_, address_, cre_add_t, cre_pc_t, j));
 				}
 			}
