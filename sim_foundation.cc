@@ -13,7 +13,7 @@
 sim_foundation * sim_foundation::s_f_ = 0;
 void init_file(ifstream & inFile_);
 //***************************************************************************//
-sim_foundation::sim_foundation(): 
+sim_foundation::sim_foundation():
 	inter_network_(),
 	ary_size_(0),
 	cube_size_(0),
@@ -40,8 +40,8 @@ sim_foundation::sim_foundation():
 	add_t.resize(cube_size_, 0);
 	for(long i = 0; i < router_counter_; i++) {
 		inter_network_.push_back(sim_router_template
-			(phy_ports_t, vc_size, buff_size, outbuff_size, add_t, 
-			 ary_size_, flit_size)); 
+			(phy_ports_t, vc_size, buff_size, outbuff_size, add_t,
+			 ary_size_, flit_size));
 		//assign the address of the router
 		add_t[cube_size_ - 1]++;
 		for(long j = cube_size_ -1; j > 0; j--) {
@@ -50,7 +50,7 @@ sim_foundation::sim_foundation():
 				add_t[j-1]++;
 			}
 		}
-			
+
 	}
 	init_file();
 }
@@ -85,7 +85,7 @@ ostream& operator<<(ostream& os, const sim_foundation& sf)
 //***************************************************************************//
 
 //karel: get the sim_router_template by add_type.
-sim_router_template & sim_foundation::router(const add_type & a) 
+sim_router_template & sim_foundation::router(const add_type & a)
 {
 	add_type::const_iterator first = a.begin();
 	add_type::const_iterator last = a.end();
@@ -97,8 +97,8 @@ sim_router_template & sim_foundation::router(const add_type & a)
 }
 
 //***************************************************************************//
-const sim_router_template & sim_foundation::router(const 
-			add_type & a) const 
+const sim_router_template & sim_foundation::router(const
+			add_type & a) const
 {
 	add_type::const_iterator first = a.begin();
 	add_type::const_iterator last = a.end();
@@ -112,7 +112,7 @@ const sim_router_template & sim_foundation::router(const
 //***************************************************************************//
 void sim_foundation::receive_EVG_message(mess_event mesg)
 {
-	//first, inject the flits 
+	//first, inject the flits
     add_type sor_addr_t;
     add_type des_addr_t;
     long pack_size_t;
@@ -177,7 +177,11 @@ void sim_foundation::receive_WIRE_message(mess_event mesg)
 	//karel: check the trace of transition.
 	if(flits_t.type()==HEADER_){
 		cout<<"karel: "<<endl;
-		cout<<"the router of ("<<des_t[0]<<", "<<des_t[1]<<", "<<des_t[2]<<") receive a flit."<<endl;
+		cout<<"the router of (";
+		for(int i=0;i<configuration::ap().cube_number();i++){
+			cout<<des_t[i]<<", ";
+		}
+		cout<<") receive a flit."<<endl;
 	}
 	//karel: end;
 	router(des_t).receive_flit(pc_t, vc_t, flits_t);
@@ -195,9 +199,9 @@ void sim_foundation::receive_CREDIT_message(mess_event mesg)
 //***************************************************************************//
 void sim_foundation::simulation_results()
 {
-	vector<sim_router_template>::const_iterator first = 
+	vector<sim_router_template>::const_iterator first =
 							inter_network_.begin();
-	vector<sim_router_template>::const_iterator last = 
+	vector<sim_router_template>::const_iterator last =
 							inter_network_.end();
 	double total_delay = 0;
 	//calculate the total delay
@@ -212,9 +216,9 @@ void sim_foundation::simulation_results()
 	double total_arbiter_power = 0;
 	double total_power = 0;
 	double total_link_power = 0;
-	vector<sim_router_template>::iterator ffirst = 
+	vector<sim_router_template>::iterator ffirst =
 							inter_network_.begin();
-	vector<sim_router_template>::iterator llast = 
+	vector<sim_router_template>::iterator llast =
 							inter_network_.end();
 	ffirst = inter_network_.begin();
 	for(; ffirst != llast; ffirst++) {
@@ -247,9 +251,9 @@ void sim_foundation::simulation_results()
 //Check if the network is back to the inital state.
 void sim_foundation::simulation_check()
 {
-	vector<sim_router_template>::const_iterator first = 
+	vector<sim_router_template>::const_iterator first =
 					inter_network_.begin();
-	vector<sim_router_template>::const_iterator last = 
+	vector<sim_router_template>::const_iterator last =
 					inter_network_.end();
 	for(; first != last; first++) {
 		first->empty_check();
