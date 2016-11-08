@@ -86,7 +86,6 @@ sim_router_template::sim_router_template(long a, long b, long c,
 
 		case TXY_ :
 		curr_algorithm = & sim_router_template::TXY_algorithm;
-		cout<<"The curr_algorithm is TXY_algorithm"<<endl;
 		break;
 
 		case XYZ_ :

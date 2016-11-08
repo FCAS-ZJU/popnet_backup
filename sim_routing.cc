@@ -10,7 +10,6 @@
 void sim_router_template::TXY_algorithm(const add_type & des_t,
 		const add_type & sor_t, long s_ph, long s_vc)
 {
-	cout<<"in TXY_algorithm"<<address_[0]<<" "<<address_[1]<<endl;
 	long xoffset = des_t[0] - address_[0];
 	long yoffset = des_t[1] - address_[1];
 	bool xdirection = (abs(static_cast<int>(xoffset)) * 2
@@ -65,8 +64,6 @@ void sim_router_template::TXY_algorithm(const add_type & des_t,
 void sim_router_template::XY_algorithm(const add_type & des_t,
 		const add_type & sor_t, long s_ph, long s_vc)
 {
-		cout<<"in XY_algorithm"<<address_[0]<<" "<<address_[1]<<endl;
-
 	long xoffset = des_t[0] - address_[0];
 	long yoffset = des_t[1] - address_[1];
 
