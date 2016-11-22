@@ -33,6 +33,7 @@ class input_template {
 		//input buffers: <phy<vc<buffer>>>
 		vector<vector<vector<flit_template> > > input_;
 		//the state of each input vc
+		// 包含INIT_, ROUTING_, VC_AB_, SW_AB_, SW_TR_, HOME_。
 		vector<vector<VC_state_type> > states_;
 		//the candidate routing vcs
 		vector<vector<vector<VC_type> > > routing_;
@@ -46,25 +47,25 @@ class input_template {
 //---------------------------------------------------------------------------//
 	public:
 		vector<vector<vector<flit_template> > > & input() {return input_;}
-		const vector<vector<vector<flit_template> > > & input() const 
+		const vector<vector<vector<flit_template> > > & input() const
 						   {return input_;}
-		const vector<flit_template> & input(long a, long b) const 
-							 {return input_[a][b];} 
-		vector<flit_template> & input(long a, long b) {return input_[a][b];} 
+		const vector<flit_template> & input(long a, long b) const
+							 {return input_[a][b];}
+		vector<flit_template> & input(long a, long b) {return input_[a][b];}
 //---------------------------------------------------------------------------//
 		void add_flit(long a, long b, const flit_template & c)
-		{	
+		{
 			 input_[a][b].push_back(c);}
-		void remove_flit(long a, long b)  
+		void remove_flit(long a, long b)
 				 {input_[a][b].erase(input_[a][b].begin());}
 
-		flit_template & get_flit(long a, long b) 
+		flit_template & get_flit(long a, long b)
 				{Sassert(input_[a][b].size() > 0);
 				return(input_[a][b][0]);}
 		const flit_template & get_flit(long a, long b) const{
 				Sassert(input_[a][b].size() > 0);
 				return(input_[a][b][0]);}
-		flit_template & get_flit(long a, long b, long c) 
+		flit_template & get_flit(long a, long b, long c)
 				{Sassert(input_[a][b].size() > c);
 				return(input_[a][b][c]);}
 		const flit_template & get_flit(long a, long b, long c) const{
@@ -86,7 +87,7 @@ class input_template {
 		void crouting_assign(long a, long b, VC_type c) {crouting_[a][b] = c;}
 		void clear_crouting(long a, long b) {crouting_[a][b] = VC_NULL;}
 //---------------------------------------------------------------------------//
-		vector<vector<vector<VC_type > > > & routing() 
+		vector<vector<vector<VC_type > > > & routing()
 			{return routing_;}
 		const vector<vector<vector<VC_type > > > & routing()  const
 			{return routing_;}
@@ -94,7 +95,7 @@ class input_template {
 	   		{return routing_[a][b];}
 		const vector<VC_type > & routing(long a, long b) const
 	   		{return routing_[a][b];}
-		void add_routing(long a, long b, VC_type c) 
+		void add_routing(long a, long b, VC_type c)
 				{ routing_[a][b].push_back(c);}
 		void clear_routing(long a, long b) {routing_[a][b].clear();}
 //---------------------------------------------------------------------------//
@@ -117,7 +118,7 @@ class output_template {
 		long buffer_size_;
 		vector<vector<long> >counter_;
 		vector<vector<VC_state_type> >flit_state_;
-		//assigned for the input 
+		//assigned for the input
 		vector<vector<VC_type> > assign_;
 		//USED_ FREE_
 		vector<vector<VC_usage_type> > usage_;
@@ -140,22 +141,22 @@ class output_template {
 		vector<vector<VC_usage_type> > & usage() {return usage_;}
 		VC_usage_type usage(long a,long b) {return usage_[a][b];}
 		VC_usage_type usage(long a,long b) const {return usage_[a][b];}
-		
+
 		VC_type & assign(long a, long b) {return assign_[a][b];}
 		const VC_type & assign(long a, long b) const {return assign_[a][b];}
 
-		void acquire(long a, long b, VC_type c) 
+		void acquire(long a, long b, VC_type c)
 			{usage_[a][b] = USED_; assign_[a][b] = c; }
-		void release(long a, long b) 
+		void release(long a, long b)
 			{usage_[a][b] = FREE_; assign_[a][b] = VC_NULL;}
 //---------------------------------------------------------------------------//
 		void add_flit(long a, const flit_template& b)
 			{ outbuffers_[a].push_back(b); localcounter_[a]--;}
 
 		void remove_flit(long a)
-		{ 
+		{
 			Sassert(outbuffers_[a].size() > 0);
-			outbuffers_[a].erase(outbuffers_[a].begin()); 
+			outbuffers_[a].erase(outbuffers_[a].begin());
 			vector<flit_template>(outbuffers_[a]).swap(outbuffers_[a]);
 			//Sassert(flit_state_[a].size() > 0);
 			//flit_state_[a].erase(flit_state_[a].begin());
@@ -171,9 +172,9 @@ class output_template {
 		   	return outbuffers_[a][0];}
 
 //---------------------------------------------------------------------------//
-		vector<flit_template> & outbuffers(long a) 
+		vector<flit_template> & outbuffers(long a)
 			{return outbuffers_[a];}
-		const vector<flit_template> & outbuffers(long a) const 
+		const vector<flit_template> & outbuffers(long a) const
 			{return outbuffers_[a];}
 
 //---------------------------------------------------------------------------//
@@ -182,7 +183,7 @@ class output_template {
 		vector<VC_type> outadd(long a) {return outadd_[a];}
 		const vector<VC_type> outadd(long a) const {return outadd_[a];}
 		VC_type get_add(long a) {return outadd_[a][0];}
-		void remove_add(long a) {Sassert(outadd_[a].size() > 0); 
+		void remove_add(long a) {Sassert(outadd_[a].size() > 0);
 			outadd_[a].erase(outadd_[a].begin());}
 		void add_add(long a, VC_type b) {outadd_[a].push_back(b);}
 
@@ -270,14 +271,14 @@ class sim_router_template {
 		const vector<long> & address() const {return address_;}
 
 		input_template  & input_module() {return input_module_;}
-		output_template & output_module() {return output_module_;}	
+		output_template & output_module() {return output_module_;}
 		long physic_ports() {return physic_ports_;}
 		long vc_number() {return vc_number_;}
 		long buffer_size() {return buffer_size_;}
 
 		void accept_flit(time_type a, const flit_template & b);
 
-	
+
 		double power_buffer_report() { return power_module_.power_buffer_report();}
 		double power_crossbar_report() { return power_module_.power_crossbar_report();}
 		double power_arbiter_report() { return power_module_.power_arbiter_report();}
@@ -289,14 +290,14 @@ class sim_router_template {
 		sim_router_template();
 		//a: phy ports. b: vc number. c: buffer size. d: output buffer size.
 		//e: its address  f: ary_size g: flit_size
-		sim_router_template(long a, long b, long c, long d, 
+		sim_router_template(long a, long b, long c, long d,
 				const add_type & e, long f, long g);
 		//-------------------------------------------------------------------//
 		//simulator evoking
 		void router_sim_pwr();
 		//-------------------------------------------------------------------//
-	
-		//calculate the total delay	
+
+		//calculate the total delay
 		void delay_update(time_type a) { total_delay_ += a;}
 		time_type total_delay() const {return total_delay_;}
 		time_type total_delay() {return total_delay_;}
@@ -310,11 +311,11 @@ class sim_router_template {
 		void receive_flit(long a, long b, flit_template & c);
 
 		void routing_decision();
-		void XY_algorithm(const add_type & des_t, const add_type & sor_t, 
+		void XY_algorithm(const add_type & des_t, const add_type & sor_t,
 				long s_ph, long s_vc);
-		void TXY_algorithm(const add_type & des_t, 
+		void TXY_algorithm(const add_type & des_t,
 				const add_type & sor_t, long s_ph, long s_vc);
-		void XYZ_algorithm(const add_type & des_t, 
+		void XYZ_algorithm(const add_type & des_t,
 				const add_type & sor_t, long s_ph, long s_vc);
 
 		VC_type vc_selection(long a, long b);

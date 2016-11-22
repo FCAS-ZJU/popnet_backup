@@ -348,12 +348,14 @@ output_template::output_template(long a, long b, long c, long d):
 }
 
 //***************************************************************************//
+// 这个函数是做什么用的了呢？
 void sim_router_template::receive_credit(long a, long b)
 {
 	output_module_.counter_inc(a, b);
 }
 
 //***************************************************************************//
+// receive_packet 是从输入文件中读取路由的函数。
 void sim_router_template::receive_packet()
 {
 	time_type event_time = mess_queue::m_pointer().current_time();
@@ -368,19 +370,15 @@ void sim_router_template::receive_packet()
 		des_addr_t.clear();
 	    for(long i = 0; i < cube_s; i++) {
 	        long t; localinFile() >> t;
-	        if(localinFile().eof()) {
-				return;
-			}
+	        if(localinFile().eof()) {return;}
 	        sor_addr_t.push_back(t);
 	    }
 	    //read destination address
     	for(long i = 0; i < cube_s; i++) {
-  	        long t; localinFile() >> t;
-	        if(localinFile().eof()) {
-				return;
-			}
-   	        des_addr_t.push_back(t);
-  	    }
+  	      long t; localinFile() >> t;
+	        if(localinFile().eof()) {return;}
+   	      des_addr_t.push_back(t);
+  	  }
     	//read packet size
     	localinFile() >> pack_size_t;
 	    inject_packet(packet_counter_, sor_addr_t,
@@ -396,7 +394,11 @@ void sim_router_template::receive_packet()
     	}
 	}
 }
+
+
 //***************************************************************************//
+// 这个是会影响flit 的start_time_的函数。
+// d 是一个十分重要的。
 //a : flit id. b: sor add. c: des add. d: start time. e: size
 void sim_router_template::inject_packet(long a, add_type & b, add_type & c,
 			time_type d, long e)
@@ -439,7 +441,6 @@ void sim_router_template::inject_packet(long a, add_type & b, add_type & c,
 		}
 		power_module_.power_buffer_write(0, flit_data);
 	}
-
 }
 
 //***************************************************************************//
@@ -615,6 +616,7 @@ void sim_router_template::flit_traversal(long i)
 
 //***************************************************************************//
 //receive the flit at the destination router
+// 更新延时的时间的唯一的函数。
 void sim_router_template::accept_flit(time_type a, const flit_template & b)
 {
     if(b.type() == TAIL_) {
