@@ -74,3 +74,14 @@ ostream& operator<<(ostream & os, const mess_event & sg)
 	os <<"time:"<<sg.time_<<"mess type:"<<sg.mess_<<endl;
 	return os;
 }
+
+
+// karel: start.
+mess_event::mess_event(time_type t, const ring_node_add_type& src, const ring_node_add_type& des, const flit_template& flit):
+	time_(t),
+	src_(src),
+	des_(des),
+	flit_(flit)
+{
+}
+// karel: edn.

@@ -15,6 +15,14 @@ enum vc_share_type {SHARE_, MONO_};
 enum VC_usage_type {USED_, FREE_};
 typedef double time_type;
 typedef vector<long> add_type;
+
+// karel: start
+// // (cube, ring)
+typedef vector<long> ring_add_type;
+// // (cube, ring, node)
+typedef vector<long> ring_node_add_type;
+// karel: end;
+
 typedef pair<long, long> VC_type;
 typedef vector<unsigned long long> Data_type;
 typedef unsigned long long Atom_type;
@@ -30,5 +38,9 @@ const VC_type VC_NULL = VC_type(-1, -1);
 #define MAX_64_ 0xffffffffffffffffLL
 #define CORR_EFF_ 0.8
 #define POWER_NOM_ 1e9
+
+// karel: start
+#define RING_DELAY_ 1.5
+// karel: end.
 
 #endif

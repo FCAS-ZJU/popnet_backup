@@ -3,10 +3,43 @@
 #include "SStd.h"
 #include <string>
 #include <ctime>
+#include <math.h>
 #include <unistd.h>
 #include <iostream>
 #include <sstream>
 #include <cstring>
+
+
+// karel: start.
+// match normal address to ring node.
+int add_to_ring_node[4][4]={
+	{0,15,10,9},
+	{1,14,11,8},
+	{2,13,12,7},
+	{3,4,5,6}
+};
+// match ring node address to normal address.
+int ring_node_to_add[16][2]={
+	0,0,
+	1,0,
+	2,0,
+	3,0,
+	3,1,
+	3,2,
+	3,3,
+	2,3,
+	1,3,
+	0,3,
+	0,2,
+	1,2,
+	2,2,
+	2,1,
+	1,1,
+	0,1,
+};
+// karel: end.
+
+
 
 //***************************************************************************//
 //***************************************************************************//
@@ -267,3 +300,36 @@ string sim_foundation:: file_name_ =
  string("Invaid file name.\n");
 
 //***************************************************************************//
+
+
+// karel:start.
+ring_node_add_type sim_foundation::three_d_to_ring_(add_type three_d)
+{
+	ring_node_add_type temp;
+	int sqrt_ring=sqrt(ring_node_);
+	long cube=(three_d[1]/sqrt_ring)*(ary_size_/sqrt_ring)+(three_d[0]/sqrt_ring);
+	temp.push_back(cube);
+	temp.push_back(three_d[2]);
+	int x=three_d[0]%sqrt_ring;
+	int y=three_d[1]%sqrt_ring;
+	temp.push_back(add_to_ring_node[x][y]);
+
+	return temp;
+}
+
+add_type sim_foundation::ring_to_3d_(ring_node_add_type rd)
+{
+	add_type temp;
+	int sqrt_ring=sqrt(ring_node_);
+	int ary=ary_size_/sqrt_ring;
+	int ring_x=rd[0]%ary;
+	int ring_y=rd[0]/ary;
+	int x=ring_node_to_add[rd[2]][0];
+	int y=ring_node_to_add[rd[2]][1];
+	temp.push_back(ring_x*sqrt_ring+x);
+	temp.push_back(ring_y*sqrt_ring+y);
+	temp.push_back(rd[1]);
+
+	return temp;
+}
+// karel: end.

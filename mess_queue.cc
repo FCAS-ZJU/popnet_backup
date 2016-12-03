@@ -6,9 +6,6 @@
 #include <unistd.h>
 
 
-bool operator<(const mess_event & a, const mess_event & b) {
-	return a.event_start() < b.event_start();
-}
 
 mess_queue * mess_queue::m_pointer_ = 0;
 

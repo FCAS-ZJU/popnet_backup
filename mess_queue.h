@@ -14,7 +14,7 @@
 #include <string>
 
 
-bool operator<(const mess_event & a, const mess_event & b);
+
 
 
 class mess_queue {

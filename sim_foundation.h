@@ -31,6 +31,9 @@ class sim_foundation {
 		static string file_name_;
 		static sim_foundation * s_f_;
 
+		// karel: start.
+		int ring_node_;
+		// karel: end.
 
 	public:
 		class file_error: public exception {
@@ -42,6 +45,12 @@ class sim_foundation {
 			private:
 				string what_;
 		};
+
+		// karel: start.
+		// translate a 3D address to a ring address.
+		ring_node_add_type three_d_to_ring_(add_type threed);
+		add_type ring_to_3d_(ring_node_add_type rd);
+		// karel: end.
 
 		static const sim_foundation & sf() {return *s_f_;}
 		static sim_foundation & wsf() {return *s_f_;}

@@ -20,7 +20,9 @@ class mess_event {
 		flit_template flit_;
 
 	public:
-
+		friend bool operator<(const mess_event & a, const mess_event & b) {
+			return a.event_start() < b.event_start();
+		}
 		time_type event_start() {return time_;}
 		time_type event_start() const {return time_;}
 		mess_type event_type() {return mess_;}
@@ -46,6 +48,11 @@ class mess_event {
 		 const add_type & a, const add_type & b, long c, long d,
 		 const flit_template & f);
 		mess_event(time_type t, mess_type mt, const flit_template & f);
+
+		// karel: start.
+		// ring_ message.
+		mess_event(time_type t, const ring_node_add_type& src, const ring_node_add_type& des, const flit_template& flit);
+		// karel: end.
 
 		mess_event(mess_event& me);
 		mess_event(const mess_event& me);
