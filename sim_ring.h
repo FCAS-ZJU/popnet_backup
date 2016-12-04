@@ -37,8 +37,8 @@ private:
 	// status of the link.
 	// the number of the link
 	int virtual_link_number_;
-	// (virtual_link(vl),node),the status of the link (can it be use to traversal.) 
-	vector<vector<bool> > link_usage_;
+	// (virtual_link(vl),node),the occupying time of the link (can it be use to traversal.) 
+	vector<vector<time_type> > link_usage_;
 
 	// time
 	time_type local_time_;
@@ -54,11 +54,11 @@ public:
 	void remove_flit_();
 
 
-	// using the magicCube algorithm get the next destination.
-	static add_type get_next_traversal_node_(flit_template flit);
+	// // using the magicCube algorithm get the next destination.
+	// static add_type get_next_traversal_node_(flit_template flit);
 
-	// for deciding traversal in the ring or in the normal popnet.
-	static bool is_ring_traversal(flit_template flit);
+	// // for deciding traversal in the ring or in the normal popnet.
+	// static bool is_ring_traversal(flit_template flit);
 
 	// set a flit to the destination in the same ring.
 	void ring_travel_();

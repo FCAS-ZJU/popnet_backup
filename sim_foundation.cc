@@ -1,6 +1,7 @@
 #include "sim_foundation.h"
 #include "mess_queue.h"
 #include "SStd.h"
+#include "index.h"
 #include <string>
 #include <ctime>
 #include <math.h>
@@ -85,6 +86,19 @@ sim_foundation::sim_foundation():
 		}
 
 	}
+
+	// karel: start.
+	ring_node_ = NODE_NUMBER_;
+	add_t.resize(2,0);
+	for(int i=0; i<(ary_size_*ary_size_/ring_node_); ++i){
+		for(int j=0; j<ary_size_; ++j){
+			add_t[0]=i;
+			add_t[1]=j;
+			inter_ring_.push_back(Ring(add_t,ring_node_,VIR_LINK_NUMBER_));
+		}
+	}
+	// karel: end.
+
 	init_file();
 }
 
@@ -207,17 +221,17 @@ void sim_foundation::receive_WIRE_message(mess_event mesg)
 	long pc_t = mesg.pc();
 	long vc_t = mesg.vc();
 	flit_template & flits_t = mesg.get_flit();
-	// //不再需要接受的消息检验了
-	// //karel: check the trace of transition.
-	// if(flits_t.type()==HEADER_){
-	// 	cout<<"karel: "<<endl;
-	// 	cout<<"the router of (";
-	// 	for(int i=0;i<configuration::ap().cube_number();i++){
-	// 		cout<<des_t[i]<<", ";
-	// 	}
-	// 	cout<<") receive a flit."<<endl;
-	// }
-	// //karel: end;
+	//不再需要接受的消息检验了
+	//karel: check the trace of transition.
+	if(flits_t.type()==HEADER_){
+		cout<<"karel: "<<endl;
+		cout<<"the router of (";
+		for(int i=0;i<configuration::ap().cube_number();i++){
+			cout<<des_t[i]<<", ";
+		}
+		cout<<") receive a flit."<<endl;
+	}
+	//karel: end;
 	router(des_t).receive_flit(pc_t, vc_t, flits_t);
 }
 
@@ -332,4 +346,33 @@ add_type sim_foundation::ring_to_3d_(ring_node_add_type rd)
 
 	return temp;
 }
+
+bool sim_foundation::is_inthesame_ring(const add_type & src,add_type & des,int pc)
+{
+	if(pc>0&&pc<5){
+		ring_node_add_type ring_src=three_d_to_ring_(src);
+		ring_node_add_type ring_des=three_d_to_ring_(des);
+		if(ring_src[0]!=ring_des[0]) return false;
+
+		add_type temp=des;
+		while(ring_src[0]==ring_des[0]){
+			des = temp;
+			if((pc%2)==0){
+				temp[(pc-1)/2]++;
+				if(temp[(pc-1)/2]==ary_size_){
+					temp[(pc-1)/2]=0;
+				}
+			}else{
+				temp[(pc-1)/2]--;
+				if(temp[(pc-1)/2]==-1){
+					temp[(pc-1)/2]=ary_size_-1;
+				}
+			}
+			ring_des=three_d_to_ring_(temp);
+		}
+	}
+	return false;
+}
+
+
 // karel: end.

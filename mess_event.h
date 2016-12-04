@@ -51,7 +51,7 @@ class mess_event {
 
 		// karel: start.
 		// ring_ message.
-		mess_event(time_type t, const ring_node_add_type& src, const ring_node_add_type& des, const flit_template& flit);
+		mess_event(time_type t, const add_type& src, const add_type& des, const flit_template& flit);
 		// karel: end.
 
 		mess_event(mess_event& me);

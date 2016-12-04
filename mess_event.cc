@@ -77,7 +77,7 @@ ostream& operator<<(ostream & os, const mess_event & sg)
 
 
 // karel: start.
-mess_event::mess_event(time_type t, const ring_node_add_type& src, const ring_node_add_type& des, const flit_template& flit):
+mess_event::mess_event(time_type t, const add_type& src, const add_type& des, const flit_template& flit):
 	time_(t),
 	src_(src),
 	des_(des),

@@ -9,6 +9,11 @@
 #include "SRGen.h"
 #include "SStd.h"
 
+// karel: start.
+#include "sim_ring.h"
+// karel: end.
+
+
 // *****************************************************//
 // data structure to model the structure and behavior   //
 // of routers.                                          //
@@ -602,15 +607,26 @@ void sim_router_template::flit_traversal(long i)
 				wire_add_t[(i-1) / 2] = ary_size_ - 1;
 			}
 		}
+		// karel: start.
+		
 		flit_template flit_t(output_module_.get_flit(i));
 		VC_type outadd_t = output_module_.get_add(i);
 		power_module_.power_link_traversal(i, flit_t.data());
-
-		output_module_.remove_flit(i);
-		output_module_.remove_add(i);
-		mess_queue::wm_pointer().add_message(mess_event(flit_delay_t,
-			WIRE_, address_, wire_add_t, wire_pc_t,
-			outadd_t.second, flit_t));
+		if(sim_foundation::wsf().is_inthesame_ring(address_,wire_add_t,i)==false){
+			output_module_.remove_flit(i);
+			output_module_.remove_add(i);
+			mess_queue::wm_pointer().add_message(mess_event(flit_delay_t,
+				WIRE_, address_, wire_add_t, wire_pc_t,
+				outadd_t.second, flit_t));
+		}
+		else 
+		{
+			ring_node_add_type ring_add=sim_foundation::wsf().three_d_to_ring_(address_);
+			Ring r = sim_foundation::wsf().ring(ring_add);
+			r.add_flit_(mess_event(event_time,address_,wire_add_t,flit_t));
+			r.ring_travel_();
+		}
+		//karel: end.
 	}
 }
 

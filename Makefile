@@ -6,12 +6,12 @@ CFLAGS =  -DS_OUT_DEBUG -Wno-deprecated  -g -DPOWER_TEST -I./$(POWER_RELEASE)/po
 LINKFLAGS = -L./$(POWER_RELEASE)/power -lm -lpower 
 .SUFFIXES: .o .cc
 
-HEADERS = index.h SString.h SStd.h SRGen.h Svector.h configuration.h mess_queue.h mess_event.h flit.h sim_foundation.h sim_router.h sim_vcarb.h
+HEADERS = index.h SString.h SStd.h SRGen.h Svector.h configuration.h mess_queue.h mess_event.h flit.h sim_foundation.h sim_router.h sim_vcarb.h sim_ring.h
 
 TARGET = popnet
 PTARGET = power_model
 
-SIM_SRCS = SString.cc SStd.cc SRGen.cc configuration.cc flit.cc sim_router.cc sim_routing.cc sim_vcarb.cc  mess_event.cc sim_foundation.cc mess_queue.cc main.cc
+SIM_SRCS = SString.cc SStd.cc SRGen.cc configuration.cc flit.cc sim_router.cc sim_routing.cc sim_vcarb.cc  mess_event.cc sim_foundation.cc mess_queue.cc main.cc sim_ring.cc
 
 SIM_OBJS = $(SIM_SRCS:.cc=.o)
 
@@ -30,9 +30,9 @@ mess_event.o: mess_event.cc mess_event.h index.h flit.h SStd.h
 mess_queue.o: mess_queue.cc mess_queue.h SStd.h index.h configuration.h \
   SRGen.h sim_foundation.h sim_router.h flit.h mess_event.h
 sim_foundation.o: sim_foundation.cc sim_foundation.h sim_router.h flit.h \
-  index.h SStd.h SRGen.h configuration.h mess_event.h mess_queue.h 
+  index.h SStd.h SRGen.h configuration.h mess_event.h mess_queue.h sim_ring.h
 sim_router.o: sim_router.cc sim_router.h flit.h index.h SStd.h SRGen.h \
-  configuration.h sim_foundation.h mess_event.h mess_queue.h
+  configuration.h sim_foundation.h mess_event.h mess_queue.h sim_ring.h
 sim_routing.o: sim_routing.cc sim_router.h flit.h index.h SStd.h SRGen.h \
   configuration.h sim_foundation.h mess_event.h mess_queue.h
 sim_vcarb.o: sim_vcarb.cc sim_router.h flit.h index.h SStd.h SRGen.h \
@@ -40,6 +40,8 @@ sim_vcarb.o: sim_vcarb.cc sim_router.h flit.h index.h SStd.h SRGen.h \
 SRGen.o: SRGen.cc SRGen.h SStd.h
 SStd.o: SStd.cc SStd.h
 SString.o: SString.cc SString.h index.h SStd.h
+sim_ring.o: sim_ring.cc sim_ring.h flit.h index.h SStd.h configuration.h\
+	sim_foundation.h mess_event.h mess_queue.h
 
 .cc.o:
 	$(CC) $(CFLAGS) -c $<  

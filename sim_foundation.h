@@ -2,6 +2,9 @@
 #define SIM_FOUNDATION_
 
 #include "sim_router.h"
+// karel: start.
+#include "sim_ring.h"
+// karel: end.
 #include "flit.h"
 #include "mess_event.h"
 #include <vector>
@@ -32,6 +35,7 @@ class sim_foundation {
 		static sim_foundation * s_f_;
 
 		// karel: start.
+		vector<Ring> inter_ring_;
 		int ring_node_;
 		// karel: end.
 
@@ -50,6 +54,15 @@ class sim_foundation {
 		// translate a 3D address to a ring address.
 		ring_node_add_type three_d_to_ring_(add_type threed);
 		add_type ring_to_3d_(ring_node_add_type rd);
+
+		Ring & ring(const ring_node_add_type &a){
+			return inter_ring_[a[0]*ary_size_+a[1]];
+		}
+		const Ring & ring(const ring_node_add_type &a) const{
+			return inter_ring_[a[0]*ary_size_+a[1]];
+		}
+		// check src,and des whether in the same ring ,if not, assign th des to the next node in the same ring.
+		bool is_inthesame_ring(const add_type & src,add_type & des,int pc);
 		// karel: end.
 
 		static const sim_foundation & sf() {return *s_f_;}
