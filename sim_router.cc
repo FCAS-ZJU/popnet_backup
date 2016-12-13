@@ -621,6 +621,12 @@ void sim_router_template::flit_traversal(long i)
 		}
 		else 
 		{
+			output_module_.remove_flit(i);
+			output_module_.remove_add(i);
+
+			// increase counter where it will increase in credit message.
+			output_module_.counter_inc(i,outadd_t.second);
+			
 			ring_node_add_type ring_add=sim_foundation::wsf().three_d_to_ring_(address_);
 			Ring r = sim_foundation::wsf().ring(ring_add);
 			r.add_flit_(mess_event(event_time,address_,wire_add_t,flit_t));

@@ -370,6 +370,7 @@ bool sim_foundation::is_inthesame_ring(const add_type & src,add_type & des,int p
 			}
 			ring_des=three_d_to_ring_(temp);
 		}
+		return true;
 	}
 	return false;
 }
