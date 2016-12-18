@@ -62,7 +62,10 @@ class sim_foundation {
 			return inter_ring_[a[0]*ary_size_+a[1]];
 		}
 		// check src,and des whether in the same ring ,if not, assign th des to the next node in the same ring.
-		bool is_inthesame_ring(const add_type & src,add_type & des,int pc);
+		bool is_inthesame_ring(const add_type & src,const add_type & nex);
+		add_type find_next_node(const add_type& src, const add_type& des);
+
+		void receive_RING_message(mess_event mesg);
 		// karel: end.
 
 		static const sim_foundation & sf() {return *s_f_;}
@@ -87,7 +90,7 @@ class sim_foundation {
 		void receive_CREDIT_message(mess_event mesg);
 
 		void router_power_exchange();
-		
+
 		void simulation_results();
 		void simulation_check();
 

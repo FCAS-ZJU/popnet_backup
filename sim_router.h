@@ -55,7 +55,8 @@ class input_template {
 //---------------------------------------------------------------------------//
 		void add_flit(long a, long b, const flit_template & c)
 		{
-			 input_[a][b].push_back(c);}
+			input_[a][b].push_back(c);
+		}
 		void remove_flit(long a, long b)
 				 {input_[a][b].erase(input_[a][b].begin());}
 

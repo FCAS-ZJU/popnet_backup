@@ -164,8 +164,10 @@ void sim_router_template::routing_decision()
 				(this->*curr_algorithm)(des_t, sor_t, 0, j);
 				input_module_.state_update(0, j, VC_AB_);
 			}
-		//the BODY_ or TAIL_ flits
-		}else if(input_module_.state(0,j) == HOME_)  {
+		}
+
+		// if already know the head_ arive the destination, deal with the other flit of the package.
+		else if(input_module_.state(0,j) == HOME_)  {
 			if(input_module_.input(0, j).size() > 0) {
 				flit_t = input_module_.get_flit(0, j);
 				Sassert(flit_t.type() != HEADER_);
@@ -181,6 +183,11 @@ void sim_router_template::routing_decision()
 			}
 		}
 	}
+
+
+
+
+
 
 	//for other physical ports
 	for(long i = 1; i < physic_ports_; i++) {

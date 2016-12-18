@@ -7,8 +7,9 @@
 
 using namespace std;
 
-enum mess_type {EVG_, ROUTER_, WIRE_, CREDIT_};
+enum mess_type {EVG_, ROUTER_, WIRE_, CREDIT_, RING_};
 enum routing_type {XY_ , TXY_ ,XYZ_};
+// Home_ main arive the destination.
 enum VC_state_type {INIT_, ROUTING_, VC_AB_, SW_AB_, SW_TR_, HOME_};
 enum flit_type {HEADER_, BODY_, TAIL_};
 enum vc_share_type {SHARE_, MONO_};
@@ -26,7 +27,7 @@ typedef vector<long> ring_node_add_type;
 typedef pair<long, long> VC_type;
 typedef vector<unsigned long long> Data_type;
 typedef unsigned long long Atom_type;
-const VC_type VC_NULL = VC_type(-1, -1); 
+const VC_type VC_NULL = VC_type(-1, -1);
 #define BUFF_BOUND_ 100
 #define WIRE_DELAY_ 0.9
 #define PIPE_DELAY_ 1.0

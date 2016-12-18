@@ -50,7 +50,7 @@ void Ring::ring_travel_()
 			local_time_=event_time+RING_DELAY_;
 			link_usage_[0][0]=local_time_;
 
-			mess_queue::wm_pointer().add_message(mess_event(local_time_,WIRE_,src,des,0,0,flit_t));
+			mess_queue::wm_pointer().add_message(mess_event(local_time_,RING_,src,des,0,0,flit_t));
 			remove_flit_();
 		}
 		else{
@@ -72,7 +72,7 @@ void Ring::ring_travel_()
 			local_time_ = min_time + RING_DELAY_;
 			link_usage_[min_index][0] = local_time_;
 
-			mess_queue::wm_pointer().add_message(mess_event(local_time_,WIRE_,src,des,0,0,flit_t));
+			mess_queue::wm_pointer().add_message(mess_event(local_time_,RING_,src,des,0,0,flit_t));
 			remove_flit_();
 		}
 	}

@@ -21,7 +21,7 @@ mess_queue::mess_queue(time_type start_time):
 	add_message(mess_event(0, ROUTER_));
 }
 
-string mess_queue:: mess_error_ = 
+string mess_queue:: mess_error_ =
 	string("This message type is not supported.\n");
 
 void mess_queue::simulator() {
@@ -43,7 +43,7 @@ void mess_queue::simulator() {
 		   sim_foundation::wsf().simulation_results();
 		   report_t += REPORT_PERIOD_;
 		}
-		
+
 		switch(current_message.event_type()) {
 
 			case EVG_ :
@@ -63,10 +63,16 @@ void mess_queue::simulator() {
 				sim_foundation::wsf().receive_CREDIT_message(current_message);
 			break;
 
+			// karel: start.
+			case RING_ :
+				sim_foundation::wsf().receive_RING_message(current_message);
+				break;
+			// karel: end.
+
 			default:
 				throw pro_error(mess_error_);
 			break;
-		} 
+		}
 	}
 }
 

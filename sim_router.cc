@@ -412,12 +412,15 @@ void sim_router_template::inject_packet(long a, add_type & b, add_type & c,
 	// next state, it should choose routing
 	VC_type vc_t;
 	for(long l = 0; l < e; l++) {
+		// create a flit_ .
 		Data_type flit_data;
 		for(long i = 0; i < flit_size_; i++) {
 			init_data_[i] = static_cast<Atom_type>(init_data_[i] * CORR_EFF_ + SRGen::wrg().
 				flat_ull(0, MAX_64_));
 			flit_data.push_back(init_data_[i]);
 		}
+
+		// for Header_ choose the best vc.
 		if(l == 0) {
 			vc_t = pair<long, long> (0, input_module_.input(0,0).size());
 			for(long i = 0; i < vc_number_; i++) {
@@ -426,6 +429,7 @@ void sim_router_template::inject_packet(long a, add_type & b, add_type & c,
 				vc_t = pair<long, long>(i, t);
 				}
 			}
+
 			//if the input buffer is empty, set it to be ROUTING_
 			if(input_module_.input(0, vc_t.first).size() == 0) {
 				input_module_.state_update(0, vc_t.first, ROUTING_);
@@ -435,18 +439,26 @@ void sim_router_template::inject_packet(long a, add_type & b, add_type & c,
 			if(input_module_.input(0, vc_t.first).size() > 100) {
 				input_module_.ibuff_is_full();
 			}
+
+
 			input_module_.add_flit(0, (vc_t.first),
 								flit_template(a, HEADER_, b, c, d, flit_data));
-		}else if(l == (e - 1)){
+		}
+
+		else if(l == (e - 1)){
 			input_module_.add_flit(0, (vc_t.first),
 								flit_template(a, TAIL_, b, c, d, flit_data));
-		}else {
+		}
+
+		else {
 			input_module_.add_flit(0, (vc_t.first),
 								flit_template(a, BODY_, b, c, d, flit_data));
 		}
 		power_module_.power_buffer_write(0, flit_data);
 	}
 }
+
+
 
 //***************************************************************************//
 //receive a flit from other router
@@ -522,6 +534,7 @@ void sim_router_template::flit_outbuffer()
 				VC_type out_t = input_module_.crouting(i, j);
 				output_module_.counter_dec(out_t.first, out_t.second);
 
+				// sent credit to his last node.
 				time_type event_time = mess_queue::m_pointer().current_time();
 				if(i != 0) {
 					add_type cre_add_t = address_;
@@ -544,6 +557,7 @@ void sim_router_template::flit_outbuffer()
 						CREDIT_, address_, cre_add_t, cre_pc_t, j));
 				}
 
+
 				long in_size_t = input_module_.input(i,j).size();
 				Sassert(in_size_t >= 1);
 				flit_template flit_t(input_module_.get_flit(i,j));
@@ -551,6 +565,8 @@ void sim_router_template::flit_outbuffer()
 				power_module_.power_buffer_read(i, flit_t.data());
 				power_module_.power_crossbar_trav(i, out_t.first, flit_t.data());
 				output_module_.add_flit(out_t.first, flit_t);
+
+				// 这个会不会对我修改的造成影响能？
 				if(i == 0) {
 					if(input_module_.ibuff_full() == true) {
 						if(input_module_.input(0,j).size() < BUFF_BOUND_) {
@@ -608,25 +624,26 @@ void sim_router_template::flit_traversal(long i)
 			}
 		}
 		// karel: start.
-		
+
 		flit_template flit_t(output_module_.get_flit(i));
 		VC_type outadd_t = output_module_.get_add(i);
 		power_module_.power_link_traversal(i, flit_t.data());
-		if(sim_foundation::wsf().is_inthesame_ring(address_,wire_add_t,i)==false){
+		if(sim_foundation::wsf().is_inthesame_ring(address_,wire_add_t)==false){
 			output_module_.remove_flit(i);
 			output_module_.remove_add(i);
 			mess_queue::wm_pointer().add_message(mess_event(flit_delay_t,
 				WIRE_, address_, wire_add_t, wire_pc_t,
 				outadd_t.second, flit_t));
 		}
-		else 
+		else
 		{
 			output_module_.remove_flit(i);
 			output_module_.remove_add(i);
-
+			add_type des = flit_t.des_addr();
+			wire_add_t = sim_foundation::wsf().find_next_node(address_, des);
 			// increase counter where it will increase in credit message.
 			output_module_.counter_inc(i,outadd_t.second);
-			
+
 			ring_node_add_type ring_add=sim_foundation::wsf().three_d_to_ring_(address_);
 			Ring r = sim_foundation::wsf().ring(ring_add);
 			r.add_flit_(mess_event(event_time,address_,wire_add_t,flit_t));
