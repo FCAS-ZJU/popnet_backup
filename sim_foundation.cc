@@ -65,7 +65,8 @@ sim_foundation::sim_foundation():
 	long flit_size = configuration::ap().flit_size();
 
 	// + 1 means, one for injection
-	long phy_ports_t = cube_size_ * 2 + 1;
+	// karel: + 1 means, for ring injection.
+	long phy_ports_t = cube_size_ * 2 + 1 + 1;
 	router_counter_ = ary_size_;
 	for(long i = 0; i < cube_size_ - 1; i++) {
 		router_counter_ = router_counter_ * ary_size_;
@@ -428,8 +429,6 @@ add_type sim_foundation::find_next_node(const add_type& src, const add_type& des
 void sim_foundation::receive_RING_message(mess_event mesg)
 {
 	add_type des_t = mesg.des();
-	long pc_t = mesg.pc();
-	long vc_t = mesg.vc();
 	flit_template & flits_t = mesg.get_flit();
 	//不再需要接受的消息检验了
 	//karel: check the trace of transition.
@@ -442,7 +441,7 @@ void sim_foundation::receive_RING_message(mess_event mesg)
 		cout<<") receive a flit from the ring."<<endl;
 	}
 	//karel: end;
-	router(des_t).receive_flit(pc_t, vc_t, flits_t);
+	router(des_t).inject_flit(flits_t);
 
 }
 

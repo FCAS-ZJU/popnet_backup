@@ -458,6 +458,29 @@ void sim_router_template::inject_packet(long a, add_type & b, add_type & c,
 	}
 }
 
+void sim_router_template::inject_flit(flit_template & c)
+{
+	// 可以影响整个包。
+	static VC_type vc_t;
+	int p = physic_ports_ - 1;
+	if(c.type() == HEADER_){
+		vc_t = pair<long, long> (0, input_module_.input(p,0).size());
+		for(long i = 0; i < vc_number_; i++) {
+			long t = input_module_.input(p,i).size();
+			if(vc_t.second > t){
+			vc_t = pair<long, long>(i, t);
+			}
+		}
+
+		//if the input buffer is empty, set it to be ROUTING_
+		if(input_module_.input(p, vc_t.first).size() == 0) {
+			input_module_.state_update(p, vc_t.first, ROUTING_);
+		}
+	}
+	input_module_.add_flit(p, (vc_t.first), c);
+	power_module_.power_buffer_write(p, c.data());
+}
+
 
 
 //***************************************************************************//
@@ -536,7 +559,7 @@ void sim_router_template::flit_outbuffer()
 
 				// sent credit to his last node.
 				time_type event_time = mess_queue::m_pointer().current_time();
-				if(i != 0) {
+				if(i != 0 && i != physic_ports_ - 1) {
 					add_type cre_add_t = address_;
 					long cre_pc_t = i;
 					if((i % 2) == 0) {
@@ -566,7 +589,7 @@ void sim_router_template::flit_outbuffer()
 				power_module_.power_crossbar_trav(i, out_t.first, flit_t.data());
 				output_module_.add_flit(out_t.first, flit_t);
 
-				// 这个会不会对我修改的造成影响能？
+				// 这个会不会对我修改的造成影响能？// 不会。
 				if(i == 0) {
 					if(input_module_.ibuff_full() == true) {
 						if(input_module_.input(0,j).size() < BUFF_BOUND_) {
@@ -669,7 +692,7 @@ void sim_router_template::accept_flit(time_type a, const flit_template & b)
 //flit traversal through link
 void sim_router_template::flit_traversal()
 {
-	for(long i = 1; i < physic_ports_; i++) {
+	for(long i = 1; i < physic_ports_ - 1; i++) {
 		flit_traversal(i);
 	}
 }

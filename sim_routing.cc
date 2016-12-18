@@ -184,13 +184,47 @@ void sim_router_template::routing_decision()
 		}
 	}
 
-
-
-
+	// for injection physical port physical - 1.
+	int k = physic_ports_ - 1;
+	for(long j = 0; j < vc_number_; j++) {
+		//for the HEADER_ flit
+		flit_template flit_t;
+		if(input_module_.state(k,j) == ROUTING_) {
+			flit_t = input_module_.get_flit(k,j);
+			add_type des_t = flit_t.des_addr();
+			add_type sor_t = flit_t.sor_addr();
+			if(address_ == des_t) {
+				accept_flit(event_time, flit_t);
+				input_module_.remove_flit(k, j);
+				input_module_.state_update(k, j, HOME_);
+			}else {
+				input_module_.clear_routing(k,j);
+				input_module_.clear_crouting(k,j);
+				(this->*curr_algorithm)(des_t, sor_t, k, j);
+				input_module_.state_update(k, j, VC_AB_);
+			}
+		}
+		// if already know the head_ arive the destination, deal with the other flit of the package.
+		else if(input_module_.state(k,j) == HOME_)  {
+			if(input_module_.input(k, j).size() > 0) {
+				flit_t = input_module_.get_flit(k, j);
+				Sassert(flit_t.type() != HEADER_);
+				accept_flit(event_time, flit_t);
+				input_module_.remove_flit(k, j);
+				if(flit_t.type() == TAIL_) {
+					if(input_module_.input(k, j).size() > 0) {
+						input_module_.state_update(k, j, ROUTING_);
+					}else {
+						input_module_.state_update(k, j, INIT_);
+					}
+				}
+			}
+		}
+	}
 
 
 	//for other physical ports
-	for(long i = 1; i < physic_ports_; i++) {
+	for(long i = 1; i < physic_ports_ - 1; i++) {
 		for(long j = 0; j < vc_number_; j++) {
 			//send back CREDIT message
 			flit_template flit_t;
