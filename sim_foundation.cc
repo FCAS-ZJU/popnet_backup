@@ -441,7 +441,8 @@ void sim_foundation::receive_RING_message(mess_event mesg)
 		cout<<") receive a flit from the ring."<<endl;
 	}
 	//karel: end;
-	router(des_t).inject_flit(flits_t);
+	// 不是很好的处理方式。
+	router(des_t).inject_flit(flits_t, 5);
 
 }
 

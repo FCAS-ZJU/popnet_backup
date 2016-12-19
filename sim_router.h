@@ -310,7 +310,7 @@ class sim_router_template {
 		void inject_packet(long a, add_type & b, add_type & c, time_type d,
 				long e);
 		// karel: start.
-		void inject_flit(flit_template &c);
+		void inject_flit(flit_template &c,long e);
 		// karel: end.
 
 		void receive_flit(long a, long b, flit_template & c);
