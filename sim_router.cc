@@ -459,41 +459,18 @@ void sim_router_template::inject_packet(long a, add_type & b, add_type & c,
 }
 
 // 使用一个header_ flit 表示整个包.
-void sim_router_template::inject_flit(flit_template & c, long e)
+void sim_router_template::inject_flit(flit_template & c)
 {
 	// 可以影响整个包。
 	// static VC_type vc_t;
-	VC_type vc_t;
 	int p = physic_ports_ - 1;
-	if(c.type() == HEADER_){
-		vc_t = pair<long, long> (0, input_module_.input(p,0).size());
-		for(long i = 0; i < vc_number_; i++) {
-			long t = input_module_.input(p,i).size();
-			if(vc_t.second > t){
-			vc_t = pair<long, long>(i, t);
-			}
-		}
-		//if the input buffer is empty, set it to be ROUTING_
-		if(input_module_.input(p, vc_t.first).size() == 0) {
-			input_module_.state_update(p, vc_t.first, ROUTING_);
-		}
-		long flit_id = c.flit_id();
-		add_type sor = c.sor_addr();
-		add_type des = c.des_addr();
-		time_type t  = c.start_time();
-		Data_type dat= c.data();
-		for(int i=0; i<e; i++){
-			if(i==0){
-				input_module_.add_flit(p,(vc_t.first),flit_template(flit_id,HEADER_,sor, des, t, dat));
-			}if(i== (e-1)){
-				input_module_.add_flit(p,(vc_t.first),flit_template(flit_id,
-					TAIL_, sor, des, t, dat));
-			}else{
-				input_module_.add_flit(p, (vc_t.first), flit_template(flit_id, BODY_, sor, des, t, dat));
-			}
-		}
-		power_module_.power_buffer_write(p, c.data());
+	//if the input buffer is empty, set it to be ROUTING_
+	if(input_module_.input(p, 0).size() == 0) {
+		if(c.type()==HEADER_)
+			input_module_.state_update(p, 0, ROUTING_);
 	}
+	input_module_.add_flit(p, 0, c);
+	power_module_.power_buffer_write(p, c.data());
 }
 
 
@@ -683,9 +660,7 @@ void sim_router_template::flit_traversal(long i)
 			output_module_.counter_inc(i,outadd_t.second);
 
 			ring_node_add_type ring_add=sim_foundation::wsf().three_d_to_ring_(address_);
-			Ring r = sim_foundation::wsf().ring(ring_add);
-			r.add_flit_(mess_event(event_time,address_,wire_add_t,flit_t));
-			r.ring_travel_();
+			sim_foundation::wsf().ring(ring_add).add_flit_(mess_event(event_time,address_,wire_add_t,flit_t), ring_add[2]);
 		}
 		//karel: end.
 	}

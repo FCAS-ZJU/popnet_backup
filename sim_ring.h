@@ -28,30 +28,31 @@ private:
 	ring_add_type address_;
 	// the number of the node in a ring.
 	int node_number_;
-	
+
 	// buffer
-	int buffer_count_;
-	// using multiset sort by the time of mess_event.
-	multiset<mess_event > buffer_;
+	vector<int> buffer_count_;
+	// using multiset sort by the time of mess_event. each node has buffer.
+	vector<vector<mess_event> > buffer_;
+	vector<int> receive_who_;
 
 	// status of the link.
 	// the number of the link
 	int virtual_link_number_;
-	// (virtual_link(vl),node),the occupying time of the link (can it be use to traversal.) 
-	vector<vector<time_type> > link_usage_;
+	// (virtual_link(vl),node),the occupying time of the link (can it be use to traversal.)
+	vector<vector<int> > link_usage_;
 
-	// time
-	time_type local_time_;
+	// each node save a local time.
+	vector<time_type> local_time_;
 
 
 
 public:
-	
+
 	Ring(ring_add_type address, int node_number, int virtual_link_number);
 	// insert a flit to a buffer.
-	void add_flit_(mess_event event);
+	void add_flit_(mess_event event, int node_id);
 	// remove a flit from buffer.
-	void remove_flit_();
+	void remove_flit_(int node_id);
 
 
 	// // using the magicCube algorithm get the next destination.
@@ -62,7 +63,8 @@ public:
 
 	// set a flit to the destination in the same ring.
 	void ring_travel_();
-
+	bool check_and_set_link(int src, int des);
+	void free_link(int src, int des);
 
 };
 

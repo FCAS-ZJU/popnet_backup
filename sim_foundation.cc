@@ -213,6 +213,12 @@ void sim_foundation::receive_ROUTER_message(mess_event mesg)
 	for(long i = 0; i < router_counter_; i++) {
 		inter_network_[i].router_sim_pwr();
 	}
+	// karel: start.
+	int ring_couter = router_counter_/ring_node_;
+	for(int i=0; i < ring_couter; ++i){
+		inter_ring_[i].ring_travel_();
+	}
+	// karel: end.
 }
 
 //***************************************************************************//
@@ -441,8 +447,8 @@ void sim_foundation::receive_RING_message(mess_event mesg)
 		cout<<") receive a flit from the ring."<<endl;
 	}
 	//karel: end;
-	// 不是很好的处理方式。
-	router(des_t).inject_flit(flits_t, 5);
+
+	router(des_t).inject_flit(flits_t);
 
 }
 
