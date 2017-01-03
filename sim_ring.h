@@ -33,6 +33,7 @@ private:
 	vector<int> buffer_count_;
 	// using multiset sort by the time of mess_event. each node has buffer.
 	vector<vector<mess_event> > buffer_;
+	vector<int> use_which_link_;
 	vector<int> receive_who_;
 
 	// status of the link.

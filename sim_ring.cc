@@ -18,6 +18,7 @@ Ring::Ring(ring_add_type address,int node_number, int virtual_link_number):
 	buffer_.resize(node_number_);
 	receive_who_.resize(node_number_, -1);
 	local_time_.resize(node_number_, -1);
+	use_which_link_.resize(node_number_, -1);
 }
 
 
@@ -46,7 +47,7 @@ void Ring::ring_travel_()
 			flit_template flit_t(m.get_flit());
 			time_type event_time = m.event_start();
 
-			if(event_time < current_time){
+			if(event_time <= current_time){
 				ring_node_add_type des_add=sim_foundation::wsf().three_d_to_ring_(des);
 				int node_id = des_add[2];
 				if(receive_who_[node_id] == i || receive_who_[node_id] == -1){
@@ -70,40 +71,44 @@ void Ring::ring_travel_()
 
 bool Ring::check_and_set_link(int src, int des)
 {
-	int min = src;
-	int max = des;
-	if(min > des){
-		min = des;
-		max = src;
-	}
-	int start = min;
-	int end = max;
-	if((max - min) > node_number_/2){
-		start = max;
-		end = min;
-	}
-	int s,e;
-	bool find_link;
-	for(int i=0; i < virtual_link_number_; ++i){
-		s = start;
-		e = end;
-		find_link = false;
-		while(s != e){
-			if(link_usage_[i][s] != -1 && link_usage_[i][s] != src) break;
-			s = (s+1)%node_number_;
-			if(s == e){
-				find_link = true;
+	if(use_which_link_[src] == -1){
+		int min = src;
+		int max = des;
+		if(min > des){
+			min = des;
+			max = src;
+		}
+		int start = min;
+		int end = max;
+		if((max - min) > node_number_/2){
+			start = max;
+			end = min;
+		}
+		int s,e;
+		bool find_link;
+		for(int i=0; i < virtual_link_number_; ++i){
+			s = start;
+			e = end;
+			find_link = false;
+			while(s != e){
+				if(link_usage_[i][s] != -1 && link_usage_[i][s] != src) break;
+				s = (s+1)%node_number_;
+				if(s == e){
+					find_link = true;
+				}
+			}
+			if(find_link){
+				while(start != end){
+					link_usage_[i][start] = src;
+					start = (start + 1) % node_number_;
+				}
+				use_which_link_[src] = i;
+				return true;
 			}
 		}
-		if(find_link){
-			while(start != end){
-				link_usage_[i][start] = src;
-				start = (start + 1) % node_number_;
-			}
-			return true;
-		}
+		return false;
 	}
-	return false;
+	return true;
 }
 
 void Ring::free_link(int src,int des)
@@ -120,28 +125,12 @@ void Ring::free_link(int src,int des)
 		start = max;
 		end = min;
 	}
-	int s,e;
-	bool find_link;
-	for(int i=0; i < virtual_link_number_; ++i){
-		s = start;
-		e = end;
-		find_link = false;
-		while(s != e){
-			if(link_usage_[i][s] != src) break;
-			s = (s+1)%node_number_;
-			if(s == e){
-				find_link = true;
-			}
-		}
-		if(find_link){
-			while(start != end){
-				link_usage_[i][start] = -1;
-				start = (start + 1) % node_number_;
-			}
-			return;
-		}
+	int l = use_which_link_[src];
+	while(start != end){
+		Sassert(link_usage_[l][start] == src);
+		link_usage_[l][start] = -1;
+		start = (start + 1) % node_number_;
 	}
-	cerr << "free_link error"<<endl;
-	exit(1);
+	use_which_link_[src] = -1;
 }
 
