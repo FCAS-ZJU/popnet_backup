@@ -62,7 +62,7 @@ class sim_foundation {
 			return inter_ring_[a[0]*ary_size_+a[1]];
 		}
 		// check src,and des whether in the same ring ,if not, assign th des to the next node in the same ring.
-		bool is_inthesame_ring(const add_type & src,const add_type & nex);
+		bool is_ring_travel(const add_type & src,const add_type & des);
 		add_type find_next_node(const add_type& src, const add_type& des);
 
 		void receive_RING_message(mess_event mesg);

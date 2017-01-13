@@ -31,8 +31,11 @@ private:
 
 	// buffer
 	vector<int> buffer_count_;
-	// using multiset sort by the time of mess_event. each node has buffer.
-	vector<vector<mess_event> > buffer_;
+	// for each router's port alocate a buffer.
+	vector<vector<vector<mess_event> > > buffer_;
+	// for each router equal to check each port buffer.
+	int physical_port_;
+	vector<int> wheel_;
 	vector<int> use_which_link_;
 	vector<int> receive_who_;
 
@@ -49,11 +52,11 @@ private:
 
 public:
 
-	Ring(ring_add_type address, int node_number, int virtual_link_number);
+	Ring(ring_add_type address, int physical_port, int node_number, int virtual_link_number);
 	// insert a flit to a buffer.
-	void add_flit_(mess_event event, int node_id);
+	void add_flit_(mess_event event, int node_id, int port);
 	// remove a flit from buffer.
-	void remove_flit_(int node_id);
+	void remove_flit_(int node_id, int port);
 
 
 	// // using the magicCube algorithm get the next destination.

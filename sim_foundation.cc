@@ -65,8 +65,8 @@ sim_foundation::sim_foundation():
 	long flit_size = configuration::ap().flit_size();
 
 	// + 1 means, one for injection
-	// karel: + 1 means, for ring injection.
-	long phy_ports_t = cube_size_ * 2 + 1 + 1;
+	// karel: + 1 means, for ring injection.// I remove + 1 into for loop.
+	long phy_ports_t = cube_size_ * 2 + 1;
 	router_counter_ = ary_size_;
 	for(long i = 0; i < cube_size_ - 1; i++) {
 		router_counter_ = router_counter_ * ary_size_;
@@ -75,7 +75,7 @@ sim_foundation::sim_foundation():
 	add_t.resize(cube_size_, 0);
 	for(long i = 0; i < router_counter_; i++) {
 		inter_network_.push_back(sim_router_template
-			(phy_ports_t, vc_size, buff_size, outbuff_size, add_t,
+			(phy_ports_t + 1, vc_size, buff_size, outbuff_size, add_t,
 			 ary_size_, flit_size));
 		//assign the address of the router
 		add_t[cube_size_ - 1]++;
@@ -95,7 +95,7 @@ sim_foundation::sim_foundation():
 		for(int j=0; j<ary_size_; ++j){
 			add_t[0]=i;
 			add_t[1]=j;
-			inter_ring_.push_back(Ring(add_t,ring_node_,VIR_LINK_NUMBER_));
+			inter_ring_.push_back(Ring(add_t, phy_ports_t, ring_node_,VIR_LINK_NUMBER_));
 		}
 	}
 	// karel: end.
@@ -354,13 +354,33 @@ add_type sim_foundation::ring_to_3d_(ring_node_add_type rd)
 	return temp;
 }
 
-bool sim_foundation::is_inthesame_ring(const add_type & src,const add_type & nex)
+bool sim_foundation::is_ring_travel(const add_type & src,const add_type & des)
 {
-		ring_node_add_type ring_src=three_d_to_ring_(src);
-		ring_node_add_type ring_nex=three_d_to_ring_(nex);
-		if(ring_src[0]!=ring_nex[0] || ring_src[1]!=ring_nex[1]) return false;
-		return true;
+	add_type nex = src;
+	long z_offset = src[2] - des[2];
+	long y_offset = src[1] - des[1];
+	long x_offset = src[0] - des[0];
+	if(z_offset != 0){
+		if(z_offset > 0){
+			--nex[2];
+		}else ++nex[2];
+	}else{
+		if(y_offset !=0){
+			if(y_offset > 0) --nex[1];
+			else ++nex[1];
+		}else{
+			if(x_offset != 0){
+				if(x_offset > 0) --nex[0];
+				else ++nex[0];
+			}
+		}
+	}
+	ring_node_add_type ring_src=three_d_to_ring_(src);
+	ring_node_add_type ring_nex=three_d_to_ring_(nex);
+	if(ring_src[0]!=ring_nex[0] || ring_src[1]!=ring_nex[1]) return false;
+	return true;
 }
+
 add_type sim_foundation::find_next_node(const add_type& src, const add_type& des)
 {
 	add_type temp=src;
