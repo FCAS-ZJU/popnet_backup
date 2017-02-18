@@ -46,29 +46,29 @@ void Ring::ring_travel_()
 	time_type current_time = mess_queue::m_pointer().current_time();
 	for(int i=0; i<node_number_; ++i){
 		if(buffer_count_[i]){
-			while (buffer_[i][wheel_].size() == 0){
-				wheel_ = (wheel_ +1) % physical_port_;
+			while (buffer_[i][wheel_[i]].size() == 0){
+				wheel_[i] = (wheel_[i] +1) % physical_port_;
 			}
-			mess_event m(*(buffer_[i][wheel_].begin()));
+			mess_event m(*(buffer_[i][wheel_[i]].begin()));
 			add_type des = m.des();
 			add_type src = m.src();
 			flit_template flit_t(m.get_flit());
 			time_type event_time = m.event_start();
 
-			if(event_time < current_time){
+			if(event_time <= current_time){
 				ring_node_add_type des_add = sim_foundation::wsf().three_d_to_ring_(des);
 				int node_id = des_add[2];
-				if(receive_who_[node_id] == i || receive_who_[node_id] = -1){
+				if(receive_who_[node_id] == i || receive_who_[node_id] == -1){
 					if(check_and_set_link(i, node_id)){
-						mess_queue::wm_pointer().add_message(mess_event(current_time+RING_DELAY_, RING_, src, des, 0, 0, flit_t));
-						remove_flit_(i, wheel_);
+						mess_queue::wm_pointer().add_message(mess_event(current_time+RING_DELAY_, RING_, src, des, 7, 0, flit_t));
+						remove_flit_(i, wheel_[i]);
 						if(flit_t.type() == HEADER_){
 							receive_who_[node_id] = i;
 						}else {
 							if(flit_t.type() == TAIL_){
 								receive_who_[node_id] = -1;
 								free_link(i, node_id);
-								wheel_ = (wheel_ +1) % physical_port_;
+								wheel_[i] = (wheel_[i] +1) % physical_port_;
 							}
 						}
 					}

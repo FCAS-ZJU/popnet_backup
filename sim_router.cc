@@ -386,8 +386,41 @@ void sim_router_template::receive_packet()
   	  }
     	//read packet size
     	localinFile() >> pack_size_t;
-	    inject_packet(packet_counter_, sor_addr_t,
+
+    	// karel: start.
+
+    	if(sim_foundation::wsf().is_ring_travel(sor_addr_t, des_addr_t)){
+    		ring_node_add_type ring_des = sim_foundation::wsf().three_d_to_ring_(sor_addr_t);
+    		add_type next_node = sim_foundation::wsf().find_next_node(sor_addr_t, des_addr_t);
+
+    		for(int w = 0; w < pack_size_t; w++){
+    			// create a flit_ .
+					Data_type flit_data;
+					for(long i = 0; i < flit_size_; i++) {
+						init_data_[i] = static_cast<Atom_type>(init_data_[i] * CORR_EFF_ + SRGen::wrg().
+							flat_ull(0, MAX_64_));
+						flit_data.push_back(init_data_[i]);
+					}
+    			if(w == 0){
+    				sim_foundation::wsf().ring(ring_des).add_flit_(mess_event(event_time, sor_addr_t, next_node,
+    				flit_template(packet_counter_, HEADER_, sor_addr_t, des_addr_t, local_input_time_, flit_data) ),
+    				ring_des[2], 0);
+    			}else if(w == pack_size_t -1){
+    				sim_foundation::wsf().ring(ring_des).add_flit_(mess_event(event_time, sor_addr_t, next_node,
+    				flit_template(packet_counter_, TAIL_, sor_addr_t, des_addr_t, local_input_time_, flit_data) ),
+    				ring_des[2], 0);
+    			}else{
+    				sim_foundation::wsf().ring(ring_des).add_flit_(mess_event(event_time, sor_addr_t, next_node,
+    				flit_template(packet_counter_, BODY_, sor_addr_t, des_addr_t, local_input_time_, flit_data) ),
+    				ring_des[2], 0);
+    			}
+    		}
+
+    	}
+	    else inject_packet(packet_counter_, sor_addr_t,
 	            des_addr_t, local_input_time_, pack_size_t);
+
+	    // karel: end.
 	    packet_counter_++;
 
    	 	//second, create next EVG_ event
@@ -638,31 +671,16 @@ void sim_router_template::flit_traversal(long i)
 				wire_add_t[(i-1) / 2] = ary_size_ - 1;
 			}
 		}
-		// karel: start.
 
 		flit_template flit_t(output_module_.get_flit(i));
 		VC_type outadd_t = output_module_.get_add(i);
 		power_module_.power_link_traversal(i, flit_t.data());
-		if(sim_foundation::wsf().is_inthesame_ring(address_,wire_add_t)==false){
-			output_module_.remove_flit(i);
-			output_module_.remove_add(i);
-			mess_queue::wm_pointer().add_message(mess_event(flit_delay_t,
-				WIRE_, address_, wire_add_t, wire_pc_t,
-				outadd_t.second, flit_t));
-		}
-		else
-		{
-			output_module_.remove_flit(i);
-			output_module_.remove_add(i);
-			add_type des = flit_t.des_addr();
-			wire_add_t = sim_foundation::wsf().find_next_node(address_, des);
-			// increase counter where it will increase in credit message.
-			output_module_.counter_inc(i,outadd_t.second);
+		output_module_.remove_flit(i);
+		output_module_.remove_add(i);
+		mess_queue::wm_pointer().add_message(mess_event(flit_delay_t,
+			WIRE_, address_, wire_add_t, wire_pc_t,
+			outadd_t.second, flit_t));
 
-			ring_node_add_type ring_add=sim_foundation::wsf().three_d_to_ring_(address_);
-			sim_foundation::wsf().ring(ring_add).add_flit_(mess_event(event_time,address_,wire_add_t,flit_t), ring_add[2]);
-		}
-		//karel: end.
 	}
 }
 

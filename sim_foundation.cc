@@ -65,8 +65,8 @@ sim_foundation::sim_foundation():
 	long flit_size = configuration::ap().flit_size();
 
 	// + 1 means, one for injection
-	// karel: + 1 means, for ring injection.// I remove + 1 into for loop.
-	long phy_ports_t = cube_size_ * 2 + 1;
+	// karel: + 1 means, for ring injection.
+	long phy_ports_t = cube_size_ * 2 + 1 +1;
 	router_counter_ = ary_size_;
 	for(long i = 0; i < cube_size_ - 1; i++) {
 		router_counter_ = router_counter_ * ary_size_;
@@ -75,7 +75,7 @@ sim_foundation::sim_foundation():
 	add_t.resize(cube_size_, 0);
 	for(long i = 0; i < router_counter_; i++) {
 		inter_network_.push_back(sim_router_template
-			(phy_ports_t + 1, vc_size, buff_size, outbuff_size, add_t,
+			(phy_ports_t, vc_size, buff_size, outbuff_size, add_t,
 			 ary_size_, flit_size));
 		//assign the address of the router
 		add_t[cube_size_ - 1]++;
@@ -228,8 +228,9 @@ void sim_foundation::receive_WIRE_message(mess_event mesg)
 	long pc_t = mesg.pc();
 	long vc_t = mesg.vc();
 	flit_template & flits_t = mesg.get_flit();
-	//不再需要接受的消息检验了
-	//karel: check the trace of transition.
+	add_type flit_des = flits_t.des_addr();
+	//karel:
+	// check the trace of transition.
 	if(flits_t.type()==HEADER_){
 		cout<<"karel: "<<endl;
 		cout<<"the router of (";
@@ -238,8 +239,19 @@ void sim_foundation::receive_WIRE_message(mess_event mesg)
 		}
 		cout<<") receive a flit."<<endl;
 	}
+
+	if(is_ring_travel(des_t, flit_des)){
+		ring_node_add_type ring_des = three_d_to_ring_(des_t);
+		time_type event_time = mess_queue::m_pointer().current_time();
+		add_type next_node = find_next_node(des_t, flit_des);
+		ring(ring_des).add_flit_(mess_event(event_time, des_t, next_node, flits_t)
+			,ring_des[2],pc_t);
+	}else{
+		router(des_t).receive_flit(pc_t, vc_t, flits_t);
+	}
+
 	//karel: end;
-	router(des_t).receive_flit(pc_t, vc_t, flits_t);
+	// router(des_t).receive_flit(pc_t, vc_t, flits_t);
 }
 
 //***************************************************************************//
@@ -377,7 +389,8 @@ bool sim_foundation::is_ring_travel(const add_type & src,const add_type & des)
 	}
 	ring_node_add_type ring_src=three_d_to_ring_(src);
 	ring_node_add_type ring_nex=three_d_to_ring_(nex);
-	if(ring_src[0]!=ring_nex[0] || ring_src[1]!=ring_nex[1]) return false;
+	if(ring_src[0]!=ring_nex[0] || ring_src[1]!=ring_nex[1] ||
+		(ring_src[0]==ring_nex[0] && ring_src[1] == ring_nex[1] && ring_src[2]==ring_nex[2])) return false;
 	return true;
 }
 
