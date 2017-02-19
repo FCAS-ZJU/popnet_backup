@@ -36,6 +36,7 @@ private:
 	// for each router equal to check each port buffer.
 	int physical_port_;
 	vector<int> wheel_;
+	vector<bool> wheel_lock_;
 	vector<int> use_which_link_;
 	vector<int> receive_who_;
 

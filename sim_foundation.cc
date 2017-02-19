@@ -264,7 +264,7 @@ void sim_foundation::receive_CREDIT_message(mess_event mesg)
 }
 
 //***************************************************************************//
-void sim_foundation::simulation_results()
+double sim_foundation::simulation_results()
 {
 	vector<sim_router_template>::const_iterator first =
 							inter_network_.begin();
@@ -312,6 +312,8 @@ void sim_foundation::simulation_results()
 	cout<<"total link power:     "<<total_link_power * POWER_NOM_<<endl;
 	cout<<"total power:          "<<total_power * POWER_NOM_<<endl;
 	cout<<"**************************************************"<<endl;
+
+	return total_delay/tot_f_t;
 }
 
 //***************************************************************************//

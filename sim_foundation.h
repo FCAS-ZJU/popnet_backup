@@ -91,7 +91,7 @@ class sim_foundation {
 
 		void router_power_exchange();
 
-		void simulation_results();
+		double simulation_results();
 		void simulation_check();
 
 		void init_file();
