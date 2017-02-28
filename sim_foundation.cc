@@ -246,6 +246,27 @@ void sim_foundation::receive_WIRE_message(mess_event mesg)
 		add_type next_node = find_next_node(des_t, flit_des);
 		ring(ring_des).add_flit_(mess_event(event_time, des_t, next_node, flits_t)
 			,ring_des[2],pc_t);
+
+		// return credit_message.
+		add_type cre_add_t = des_t;
+		long i = pc_t;
+		long cre_pc_t = i;
+		if((i % 2) == 0) {
+			cre_pc_t = i - 1;
+			cre_add_t[(i-1)/2] ++;
+			if(cre_add_t[(i-1)/2] == ary_size_) {
+				cre_add_t[(i-1)/2] = 0;
+			}
+		}else {
+			cre_pc_t = i + 1;
+			cre_add_t[(i-1)/2] --;
+			if(cre_add_t[(i-1)/2] == -1) {
+				cre_add_t[(i-1)/2] = ary_size_ - 1;
+			}
+		}
+		mess_queue::wm_pointer().add_message(
+			mess_event(event_time + CREDIT_DELAY_,
+			CREDIT_, des_t, cre_add_t, cre_pc_t, vc_t));
 	}else{
 		router(des_t).receive_flit(pc_t, vc_t, flits_t);
 	}
