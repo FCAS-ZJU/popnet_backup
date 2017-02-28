@@ -71,7 +71,14 @@ class sim_foundation {
 		static const sim_foundation & sf() {return *s_f_;}
 		static sim_foundation & wsf() {return *s_f_;}
 		sim_foundation();
-		~sim_foundation(){s_f_ = 0;}
+		// karel: start
+		~sim_foundation(){
+			s_f_ = 0;
+			for(int i=0; i < router_counter_; i++){
+				inter_network_[i].localinFile().close();
+			}
+		}
+		// karel: end.
 		long ary_size() const {return ary_size_;}
 		long cube_size() const {return cube_size_;}
 		long packet_counter() {return packet_counter_;}

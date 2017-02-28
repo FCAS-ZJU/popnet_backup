@@ -43,7 +43,7 @@ const VC_type VC_NULL = VC_type(-1, -1);
 // karel: start
 #define RING_DELAY_ 1.5
 #define NODE_NUMBER_ 16
-#define VIR_LINK_NUMBER_ 1
+#define VIR_LINK_NUMBER_ 2
 // karel: end.
 
 #endif
